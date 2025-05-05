@@ -10,7 +10,8 @@ const Notes = () => {
   const [newNote, setNewNote] = useState({ 
     title: '', 
     description: '', 
-    deadline: new Date().toISOString().split('T')[0] 
+    deadline: new Date().toISOString().split('T')[0],
+    time: new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
   });
   const [confirmationModal, setConfirmationModal] = useState({
     show: false,
@@ -93,8 +94,16 @@ const Notes = () => {
       
       if (response.data.success) {
         const allNotes = response.data.payload || [];
-        const active = allNotes.filter(note => note.status !== 'selesai');
-        const completed = allNotes.filter(note => note.status === 'selesai');
+        
+        // Sort notes by deadline (earliest first)
+        const sortedNotes = [...allNotes].sort((a, b) => {
+          const dateA = new Date(a.deadline);
+          const dateB = new Date(b.deadline);
+          return dateA - dateB;
+        });
+        
+        const active = sortedNotes.filter(note => note.status !== 'selesai');
+        const completed = sortedNotes.filter(note => note.status === 'selesai');
         
         setNotes(active);
         setCompletedNotes(completed);
@@ -128,7 +137,7 @@ const Notes = () => {
       const noteData = {
         title: newNote.title,
         description: newNote.description || "",
-        deadline: newNote.deadline,
+        deadline: `${newNote.deadline}T${newNote.time}`,
         user_id: userId
       };
       
@@ -138,7 +147,8 @@ const Notes = () => {
         setNewNote({ 
           title: '', 
           description: '', 
-          deadline: new Date().toISOString().split('T')[0] 
+          deadline: new Date().toISOString().split('T')[0],
+          time: new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
         });
         fetchNotes();
         setError(null);
@@ -250,10 +260,15 @@ const Notes = () => {
     if (!dateString) return 'No deadline';
     
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
+    
+    // Format to Indonesian locale with full date and time, but without forcing timezone
+    return date.toLocaleDateString('id-ID', {
       year: 'numeric',
-      month: 'short',
-      day: 'numeric'
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
     });
   };
 
@@ -465,14 +480,23 @@ const Notes = () => {
               ></textarea>
             </div>
             
-            <div className="mb-6">
+            <div className="mb-4">
               <label className="block text-[#d5cea3] mb-2">Deadline</label>
-              <input 
-                type="date" 
-                className="w-full p-3 bg-[#3c2a21] border-2 border-[#d5cea3] rounded-md text-[#d5cea3] focus:outline-none focus:ring-2 focus:ring-[#a79770]"
-                value={newNote.deadline}
-                onChange={(e) => setNewNote({...newNote, deadline: e.target.value})}
-              />
+              <div className="flex space-x-2">
+                <input 
+                  type="date" 
+                  className="flex-1 p-3 bg-[#3c2a21] border-2 border-[#d5cea3] rounded-md text-[#d5cea3] focus:outline-none focus:ring-2 focus:ring-[#a79770]"
+                  value={newNote.deadline}
+                  onChange={(e) => setNewNote({...newNote, deadline: e.target.value})}
+                />
+                <input 
+                  type="time" 
+                  className="w-1/3 p-3 bg-[#3c2a21] border-2 border-[#d5cea3] rounded-md text-[#d5cea3] focus:outline-none focus:ring-2 focus:ring-[#a79770]"
+                  value={newNote.time}
+                  onChange={(e) => setNewNote({...newNote, time: e.target.value})}
+                />
+              </div>
+              <p className="text-sm text-[#d5cea3] mt-1 opacity-80">Format Waktu: 24 jam (WIB)</p>
             </div>
             
             <motion.button 

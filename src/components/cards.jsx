@@ -23,6 +23,12 @@ const Cards = ({
     }
   };
 
+  const adjustToWIB = (dateString) => {
+    const date = new Date(dateString);
+    date.setHours(date.getHours() - 7);
+    return date;
+  };
+
   const cardStyles = type === 'active' 
     ? "bg-[#5c4033] border-2 border-[#d5cea3]" 
     : "bg-[#3c2a21] border-2 border-[#5c4033] opacity-90";
@@ -38,6 +44,39 @@ const Cards = ({
   const badgeColor = type === 'active' 
     ? "bg-red-600 text-white" 
     : "bg-[#1a120b] text-[#d5cea3]";
+
+  const calculateTimeRemaining = () => {
+    if (!note.deadline || type !== 'active') return null;
+    
+    const now = new Date();
+    const deadline = adjustToWIB(note.deadline);
+    
+    if (deadline < now) return { text: "Deadline telah lewat", isOverdue: true };
+    
+    const diffTime = deadline - now;
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    const diffHours = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const diffMinutes = Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
+    
+    let remainingText = '';
+    
+    if (diffDays > 0) {
+      remainingText = `${diffDays} hari `;
+      if (diffHours > 0) remainingText += `${diffHours} jam `;
+      remainingText += 'lagi';
+    } else if (diffHours > 0) {
+      remainingText = `${diffHours} jam `;
+      if (diffMinutes > 0) remainingText += `${diffMinutes} menit `;
+      remainingText += 'lagi';
+    } else {
+      remainingText = `${diffMinutes} menit lagi`;
+    }
+    
+    return { text: remainingText, isOverdue: false };
+  };
+
+  const timeRemaining = calculateTimeRemaining();
+  const wibDeadline = note.deadline ? adjustToWIB(note.deadline) : null;
 
   return (
     <motion.div
@@ -56,17 +95,24 @@ const Cards = ({
       <div className={`text-[#d5cea3] ${type === 'completed' ? 'opacity-80' : 'opacity-90'} mb-3`}>
         <p className="text-sm mb-1">
           <span className="font-bold">
-            {type === 'active' ? 'Deadline:' : 'Deadline was:'}
-          </span> {formatDate ? formatDate(note.deadline) : note.deadline}
+            {type === 'active' ? 'Tenggat Waktu:' : 'Tenggat Waktu selesai:'}
+          </span> {formatDate ? formatDate(wibDeadline) : wibDeadline?.toString()}
         </p>
-        <p className="text-sm">
-          <span className="font-bold">Created:</span> {formatDate ? formatDate(note.created_at) : note.created_at}
+        
+        {timeRemaining && type === 'active' && (
+          <p className={`text-sm ${timeRemaining.isOverdue ? 'text-red-400' : 'text-green-400'}`}>
+            <span className="font-bold">Sisa Waktu:</span> {timeRemaining.text}
+          </p>
+        )}
+        
+        <p className="text-sm mt-1">
+          <span className="font-bold">Dibuat pada:</span> {formatDate ? formatDate(note.created_at) : note.created_at}
         </p>
       </div>
       
       <div className={`${contentBg} p-3 rounded-md mb-4 min-h-24 max-h-32 overflow-y-auto`}>
         <p className={`text-[#d5cea3] ${type === 'completed' ? 'opacity-80' : ''}`}>
-          {note.description || "No description provided"}
+          {note.description || "Tidak ada deskripsi"}
         </p>
       </div>
       
@@ -78,7 +124,7 @@ const Cards = ({
             whileTap={{ scale: 0.95 }}
             onClick={() => onComplete && onComplete(note.id)}
           >
-            Mark Complete
+            Selesai
           </motion.button>
         ) : (
           <motion.button
