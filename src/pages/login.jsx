@@ -16,18 +16,14 @@ const Login = () => {
     setError('');
     
     try {
-      // Construct the URL with query parameters directly, just like in Postman
       const url = `https://focus-flow-be.vercel.app/user/login?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`;
       
       console.log('Sending login request to:', url);
-      
-      // Use axios.post but without any data in the body
       const response = await axios.post(url);
       
       console.log('Login response:', response.data);
       
       if (response.data.success) {
-        // Data user ada di response.data.payload, bukan response.data
         const userData = response.data.payload;
         
         console.log('User data received:', userData);
@@ -45,7 +41,7 @@ const Login = () => {
         
         // Small delay to ensure localStorage is updated before redirect
         setTimeout(() => {
-          navigate('/notes');
+          navigate('/landingPage.jsx');
         }, 300);
       } else {
         setError(response.data.message || 'Login failed');
