@@ -17,7 +17,7 @@ const Login = () => {
     
     try {
       // Construct the URL with query parameters directly, just like in Postman
-      const url = `https://backend-tutam-sbd9-dean.vercel.app/user/login?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`;
+      const url = `https://focus-flow-be.vercel.app/user/login?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`;
       
       console.log('Sending login request to:', url);
       
@@ -78,140 +78,149 @@ const Login = () => {
     }
   };
 
-  // Cloud animation
-  const [cloudPositions] = useState([
-    { left: '5%', top: '15%', delay: 0 },
-    { left: '25%', top: '10%', delay: 0.5 },
-    { left: '70%', top: '20%', delay: 1 },
-  ]);
+  const Cloud = () => (
+    <img src="/cloud.svg" alt="Cloud" />
+  );
+
+  const Book = () => (
+    <img src="/book.svg" alt="Book" />
+  );
+  const cloudPositions = [
+    { top: '15%', delay: 0, direction: 'right-to-left' },
+    { top: '35%', delay: 2, direction: 'left-to-right' },
+    { top: '60%', delay: 1, direction: 'right-to-left' },
+    { top: '80%', delay: 3, direction: 'left-to-right' }
+  ];
 
   return (
-    <div className="w-full h-screen bg-amber-600 flex flex-col items-center justify-center overflow-hidden relative">
-      {/* Back to Home button */}
+    <div className="w-full h-screen bg-blue-300 flex flex-col items-center justify-center overflow-hidden relative">      {/* Home button with animation */}
       <motion.div 
-        className="absolute top-6 left-6 z-30"
+        className="absolute top-4 right-4 z-30"
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.6 }}
+      >        <motion.button
+          onClick={() => navigate('/')}
+          className="bg-blue-200 text-blue-500 px-4 py-1 rounded-md flex items-center text-sm font-poppins"
+          whileHover={{ scale: 1.05, backgroundColor: "#bfdbfe" }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+          </svg>
+          Home
+        </motion.button>
+      </motion.div>      <motion.div 
+        className="absolute top-16 flex items-center justify-center z-20"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
+        transition={{ duration: 0.8, delay: 0.3 }}
       >
-        <motion.button
-          onClick={() => navigate('/')}
-          className="bg-amber-800 text-amber-200 px-4 py-2 rounded-md border-2 border-amber-900 flex items-center font-bold"
-          whileHover={{ scale: 1.05, backgroundColor: '#92400e' }}
-          whileTap={{ scale: 0.95 }}
-          style={{ fontFamily: 'monospace' }}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
-          HOME
-        </motion.button>
-      </motion.div>
-
-      {/* Clouds with Framer Motion */}
-      {cloudPositions.map((cloud, index) => (
         <motion.div 
+          className="w-16 h-16 max-md:w-10 max-md:h-10 border-none bg-blue-300 flex items-center justify-center mr-2"
+          animate={{ rotate: [0, 0, 5, -5, 0] }}
+          transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
+        >
+          <Book />
+        </motion.div>        <motion.h1 
+          className="text-4xl text-white font-bold font-poppins" 
+          animate={{ scale: [1, 1.05, 1] }}
+          transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
+        >
+          FocusFlow*
+        </motion.h1>
+      </motion.div>      {/* Animated Clouds - with different directions */}
+      {cloudPositions.map((cloud, index) => (
+        <motion.div
           key={index}
           className="absolute z-10"
-          initial={{ x: -100, opacity: 0 }}
-          animate={{ 
-            x: 0, 
-            opacity: 1,
-            left: cloud.left,
-            top: cloud.top,
-          }}
-          transition={{ 
+          initial={cloud.direction === 'right-to-left' ? { right: -150 } : { left: -150 }}
+          animate={cloud.direction === 'right-to-left' ? { right: '100%' } : { left: '100%' }}
+          transition={{
+            repeat: Infinity,
+            duration: 20 + index * 4,
             delay: cloud.delay,
-            duration: 1.5
+            ease: "linear"
           }}
+          style={{ top: cloud.top }}
         >
-          <div className="w-32 h-16 relative">
-            <div className="absolute bg-amber-100 w-12 h-6 top-4 left-0"></div>
-            <div className="absolute bg-amber-100 w-16 h-10 top-0 left-8"></div>
-            <div className="absolute bg-amber-100 w-12 h-6 top-4 left-20"></div>
-          </div>
+          <Cloud />
         </motion.div>
       ))}
 
-      {/* Login Form */}
+      {/* Login Form with animations */}
       <motion.div 
-        className="z-20 bg-amber-200 border-4 border-amber-900 p-8 rounded-lg w-96 shadow-xl"
-        initial={{ y: 100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.8, delay: 0.2 }}
-      >
-        <motion.h2 
-          className="text-3xl font-bold text-amber-900 mb-6 text-center"
-          style={{ fontFamily: 'monospace' }}
-          initial={{ scale: 0.8 }}
+        className="z-20 bg-Yellow_Pixel p-6 rounded-lg w-80 shadow-md mt-20 md:mt-20"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.5 }}
+      >        <motion.h2 
+          className="text-xl font-extrabold text-Blue_Pixel2 mb-4 text-center font-poppins"
+          initial={{ scale: 0.9 }}
           animate={{ scale: 1 }}
-          transition={{ duration: 0.5, delay: 0.5 }}
+          transition={{ duration: 0.5 }}
         >
-          LOGIN
+          Login
         </motion.h2>
-        
-        {error && (
+          {error && (
           <motion.div 
-            className="bg-red-200 text-red-800 p-2 mb-4 rounded border border-red-400"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
+            className="bg-red-100 text-red-600 p-2 mb-4 rounded text-sm font-poppins"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            transition={{ duration: 0.3 }}
           >
             {error}
           </motion.div>
         )}
         
-        <form onSubmit={handleLogin}>
-          <div className="mb-4">
-            <label className="block text-amber-900 mb-1 font-medium" style={{ fontFamily: 'monospace' }}>
+        <div>          <div className="mb-3">
+            <label className="block text-blue-400 font-bold mb-1 text-sm font-poppins">
               Email
             </label>
             <motion.input 
-              whileFocus={{ scale: 1.02 }}
+              whileFocus={{ scale: 1.02, borderColor: "#3b82f6" }}
               type="email" 
-              className="w-full p-2 border-2 border-amber-900 bg-amber-50 rounded focus:outline-none focus:ring-2 focus:ring-amber-500"
+              className="w-full p-2 border border-blue-200 rounded focus:outline-none focus:border-blue-400 font-poppins"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              required
             />
           </div>
-          
-          <div className="mb-6">
-            <label className="block text-amber-900 mb-1 font-medium" style={{ fontFamily: 'monospace' }}>
+            <div className="mb-4">
+            <label className="block text-blue-400 font-bold mb-1 text-sm font-poppins">
               Password
             </label>
             <motion.input 
-              whileFocus={{ scale: 1.02 }}
+              whileFocus={{ scale: 1.02, borderColor: "#3b82f6" }}
               type="password" 
-              className="w-full p-2 border-2 border-amber-900 bg-amber-50 rounded focus:outline-none focus:ring-2 focus:ring-amber-500"
+              className="w-full p-2 border border-blue-200 rounded focus:outline-none focus:border-blue-400 font-poppins"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              required
             />
           </div>
-          
-          <motion.button 
-            type="submit"
-            className="w-full bg-amber-500 text-amber-900 font-bold py-2 px-4 rounded border-2 border-amber-900 hover:bg-amber-400 transition-colors duration-300"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            <motion.button 
+            onClick={handleLogin}
+            className="w-full bg-Blue_Pixel3 text-white font-bold py-2 px-4 rounded hover:bg-blue-500 transition-colors font-poppins"
+            whileHover={{ scale: 1.03, backgroundColor: "#3b82f6" }}
+            whileTap={{ scale: 0.97 }}
             disabled={isLoading}
-            style={{ fontFamily: 'monospace' }}
           >
-            {isLoading ? 'LOGGING IN...' : 'LOG IN'}
+            {isLoading ? 'Logging in...' : 'Log In'}
           </motion.button>
-        </form>
-        
-        <motion.div 
-          className="mt-4 text-center text-amber-900"
+        </div>
+          <motion.div 
+          className="mt-4 text-center text-xs font-poppins"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1 }}
-          style={{ fontFamily: 'monospace' }}
         >
           Don't have an account?{' '}
-          <Link to="/register" className="text-amber-800 underline hover:text-amber-700">
+          <motion.a 
+            href="/register" 
+            className="text-blue-600 hover:underline font-poppins"
+            whileHover={{ scale: 1.1, color: "#2563eb" }}
+          >
             Register here
-          </Link>
+          </motion.a>
         </motion.div>
       </motion.div>
     </div>

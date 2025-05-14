@@ -2,51 +2,20 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 const Homepage = () => {
     const navigate = useNavigate();
-    const [hover, setHover] = useState(false);
     const [user, setUser] = useState(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-    const [cloudPositions, setCloudPositions] = useState([
-      { left: '10%', speed: 0.2 },
-      { left: '30%', speed: 0.15 },
-      { left: '60%', speed: 0.25 },
-      { left: '85%', speed: 0.18 }
-    ]);
-    
-    useEffect(() => {
-      const interval = setInterval(() => {
-        setCloudPositions(prev => prev.map(cloud => {
-          let newLeft = parseFloat(cloud.left) + cloud.speed;
-          if (newLeft > 110) newLeft = -20;
-          return { ...cloud, left: `${newLeft}%` };
-        }));
-      }, 100);
-      
-      return () => clearInterval(interval);
-    }, []);
-  
-    const [shake, setShake] = useState(false);
-    const handleClick = () => {
-      setShake(true);
-      setTimeout(() => {
-        setShake(false);
-        if (isAuthenticated) {
-          navigate('/notes');
-        } else {
-          navigate('/login');
-        }
-      }, 500);
-    };
-
-    const handleLogout = () => {
-      localStorage.removeItem('user');
-      localStorage.removeItem('isAuthenticated');
-      setUser(null);
-      setIsAuthenticated(false);
-    };
+    // Cloud positions for animation
+    const cloudPositions = [
+      { top: '15%', delay: 0, direction: 'right-to-left' },
+      { top: '35%', delay: 2, direction: 'left-to-right' },
+      { top: '60%', delay: 1, direction: 'right-to-left' },
+      { top: '80%', delay: 3, direction: 'left-to-right' }
+    ];
 
     useEffect(() => {
       const authStatus = localStorage.getItem('isAuthenticated') === 'true';
@@ -61,142 +30,262 @@ const Homepage = () => {
         }
       }
     }, []);
-  
+
+    const handleLogout = () => {
+      localStorage.removeItem('user');
+      localStorage.removeItem('isAuthenticated');
+      setUser(null);
+      setIsAuthenticated(false);
+    };
+    
+    // Function to handle navigation based on authentication status with SweetAlert
+    const handleNavigate = (path, featureName) => {
+      if (isAuthenticated) {
+        navigate(`/${path}`);
+      } else {
+        // Show SweetAlert2 notification
+        Swal.fire({
+          title: 'Login Required',
+          text: `Please login to access ${featureName} feature`,
+          icon: 'info',
+          confirmButtonText: 'Login Now',
+          showCancelButton: true,
+          cancelButtonText: 'Later',
+          background: '#ffffff',
+          confirmButtonColor: '#3b82f6',
+          cancelButtonColor: '#cbd5e1',
+          iconColor: '#3b82f6',
+          customClass: {
+            title: 'font-poppins text-blue-600',
+            content: 'font-poppins'
+          }
+        }).then((result) => {
+          if (result.isConfirmed) {
+            navigate('/login');
+          }
+        });
+      }
+    };
+    
+    // Component for Cloud SVG
+    const Cloud = () => (
+      <img src="/cloud.svg" alt="Cloud" className="w-24 h-16" />
+    );
+    
+    // Component for Book SVG
+    const Book = () => (
+      <img src="/book.svg" alt="Book" className="w-full h-full" />
+    );
+    
+    // SVG icons for feature cards
+    const CreateNoteIcon = () => (
+      <img src="/createNote.svg" alt="Create Note" className="w-6 h-6" />
+    );
+    
+    const PomodoroIcon = () => (
+      <img src="/pomodoro.svg" alt="Pomodoro Timer" className="w-6 h-6" />
+    );
+    
+    const FlashcardIcon = () => (
+      <img src="/flashcard.svg" alt="Flashcards" className="w-6 h-6" />
+    );
+
     return (
-      <motion.div 
-        className="w-full h-screen bg-amber-600 flex flex-col items-center justify-center overflow-hidden relative"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.8 }}
-      >
-        {/* Clouds */}
+      <div className="w-full h-auto bg-blue-300 flex flex-col items-center overflow-hidden relative">
+        {/* Animated Clouds - with different directions */}
         {cloudPositions.map((cloud, index) => (
-          <motion.div 
+          <motion.div
             key={index}
             className="absolute z-10"
-            style={{ 
-              left: cloud.left,
-              top: ['15%', '10%', '20%', '5%'][index % 4]
+            initial={cloud.direction === 'right-to-left' ? { right: -150 } : { left: -150 }}
+            animate={cloud.direction === 'right-to-left' ? { right: '100%' } : { left: '100%' }}
+            transition={{
+              repeat: Infinity,
+              duration: 20 + index * 4,
+              delay: cloud.delay,
+              ease: "linear"
             }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: index * 0.2, duration: 1 }}
+            style={{ top: cloud.top }}
           >
-            <div className="w-32 h-16 relative">
-              <div className="absolute bg-amber-100 w-12 h-6 top-4 left-0"></div>
-              <div className="absolute bg-amber-100 w-16 h-10 top-0 left-8"></div>
-              <div className="absolute bg-amber-100 w-12 h-6 top-4 left-20"></div>
-            </div>
+            <Cloud />
           </motion.div>
         ))}
-
+        
         {/* User greeting if logged in */}
         {isAuthenticated && user && (
           <motion.div 
-            className="absolute top-6 right-6 z-30 bg-amber-800 px-4 py-2 rounded-lg border-2 border-amber-900"
+            className="absolute top-4 right-4 z-30 bg-blue-400 px-4 py-2 rounded-md"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
           >
             <div className="flex items-center justify-between">
-              <h2 className="text-amber-200 font-bold mr-4" style={{ fontFamily: 'monospace' }}>
-                HALO, {user.name?.toUpperCase()}
+              <h2 className="text-white font-bold mr-4 font-poppins">
+                Hello, {user.name}
               </h2>
               <motion.button
-                className="bg-amber-600 text-amber-200 px-3 py-1 rounded border border-amber-900 text-sm"
-                whileHover={{ scale: 1.05, backgroundColor: '#d97706' }}
+                className="bg-blue-500 text-white px-3 py-1 rounded border border-blue-600 text-sm font-poppins"
+                whileHover={{ scale: 1.05, backgroundColor: '#3b82f6' }}
                 whileTap={{ scale: 0.95 }}
                 onClick={handleLogout}
-                style={{ fontFamily: 'monospace' }}
               >
-                LOGOUT
+                Logout
               </motion.button>
             </div>
           </motion.div>
         )}
-  
-        {/* Title */}
+        
+        {/* Logo and Heading */}
         <motion.div 
-          className="z-20 mb-2 mt-8 text-center font-black"
-          initial={{ y: -50, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-        >
-          <h1 className="text-6xl font-bold text-amber-400 tracking-wide"
-              style={{ 
-                fontFamily: 'monospace',
-                WebkitTextStroke: '3px #5c3000',
-                textShadow: '4px 4px 0 #5c3000'
-              }}>
-            CRUMBLE
-          </h1>
-          <h1 className="text-6xl font-bold text-amber-400 tracking-wide"
-              style={{ 
-                fontFamily: 'monospace',
-                WebkitTextStroke: '3px #5c3000',
-                textShadow: '4px 4px 0 #5c3000'
-              }}>
-            NOTES
-          </h1>
-        </motion.div>
-  
-        {/* Main Button */}
-        <motion.div 
-          className={`z-20 mt-8 relative ${shake ? 'animate-bounce' : ''}`}
-          onMouseEnter={() => setHover(true)}
-          onMouseLeave={() => setHover(false)}
-          onClick={handleClick}
-          initial={{ y: 50, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
+          className="mt-16 flex items-center justify-center z-20"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.3 }}
         >
           <motion.div 
-            className="bg-amber-300 border-4 border-amber-900 px-8 py-4 cursor-pointer"
-            whileHover={{ scale: 1.05, boxShadow: '0px 5px 15px rgba(0,0,0,0.2)' }}
-            whileTap={{ scale: 0.95 }}
+            className="w-16 h-16 border-none bg-blue-300 flex items-center justify-center mr-2"
+            animate={{ rotate: [0, 0, 5, -5, 0] }}
+            transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
           >
-            <p className="text-amber-900 text-2xl font-bold text-center"
-              style={{ fontFamily: 'monospace' }}>
-              {isAuthenticated ? (
-                <>GO TO MY NOTES</>
-              ) : (
-                <>LET'S START BREAKING<br/>DEADLINES</>
-              )}
-            </p>
+            <Book />
           </motion.div>
-        </motion.div>
-
-        {/* Authentication Buttons - only show if not authenticated */}
-        {!isAuthenticated && (
-          <motion.div 
-            className="z-20 mt-6 flex space-x-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.6, duration: 0.5 }}
+          <motion.h1 
+            className="text-4xl text-white font-bold font-poppins" 
+            animate={{ scale: [1, 1.05, 1] }}
+            transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
           >
+            FocusFlow*
+          </motion.h1>
+        </motion.div>
+        
+        {/* Subtitle */}
+        <motion.p
+          className="text-white text-center mt-2 mb-10 max-w-md px-4 font-poppins"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4, duration: 0.8 }}
+        >
+          Complete productivity app for students to manage notes, time, and flashcards effectively
+        </motion.p>
+
+        {/* Feature Cards */}
+        <div className="w-full max-w-md px-4 z-20">
+          {/* Create Notes Card - Now a button with SweetAlert */}
+          <motion.button
+            onClick={() => handleNavigate('notes', 'Notes')}
+            className="w-full text-left bg-white rounded-lg shadow-md p-5 mb-4 cursor-pointer border border-transparent hover:border-blue-200"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.5 }}
+            whileHover={{ 
+              scale: 1.02, 
+              boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
+              backgroundColor: "#f0f9ff" 
+            }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <div className="flex items-center">
+              <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                <CreateNoteIcon />
+              </div>
+              <h3 className="ml-3 text-lg font-bold text-blue-500 font-poppins">Create Notes</h3>
+            </div>
+            <p className="mt-2 text-sm text-gray-500 font-poppins">
+              Create and organize your notes with deadlines and completion tracking.
+            </p>
+          </motion.button>
+
+          {/* Pomodoro Timer Card - Now a button with SweetAlert */}
+          <motion.button
+            onClick={() => handleNavigate('pomodoro', 'Pomodoro Timer')}
+            className="w-full text-left bg-white rounded-lg shadow-md p-5 mb-4 cursor-pointer border border-transparent hover:border-blue-200"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.6 }}
+            whileHover={{ 
+              scale: 1.02, 
+              boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
+              backgroundColor: "#f0f9ff" 
+            }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <div className="flex items-center">
+              <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                <PomodoroIcon />
+              </div>
+              <h3 className="ml-3 text-lg font-bold text-blue-500 font-poppins">Pomodoro Timer</h3>
+            </div>
+            <p className="mt-2 text-sm text-gray-500 font-poppins">
+              Stay focused with customizable pomodoro timers and break sessions.
+            </p>
+          </motion.button>
+
+          {/* Flashcards Card - Now a button with SweetAlert */}
+          <motion.button
+            onClick={() => handleNavigate('flashcard', 'Flashcards')}
+            className="w-full text-left bg-white rounded-lg shadow-md p-5 mb-4 cursor-pointer border border-transparent hover:border-blue-200"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.7 }}
+            whileHover={{ 
+              scale: 1.02, 
+              boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
+              backgroundColor: "#f0f9ff" 
+            }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <div className="flex items-center">
+              <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                <FlashcardIcon />
+              </div>
+              <h3 className="ml-3 text-lg font-bold text-blue-500 font-poppins">Flashcards</h3>
+            </div>
+            <p className="mt-2 text-sm text-gray-500 font-poppins">
+              Create and study flashcards to improve your learning experience.
+            </p>
+          </motion.button>
+        </div>
+
+        {/* Login/Register Buttons */}
+        {!isAuthenticated && (
+          <div className="z-20 mt-4 w-full max-w-md px-4">
             <motion.button
-              className="bg-amber-700 text-amber-200 px-6 py-2 rounded border-2 border-amber-900 font-bold"
-              style={{ fontFamily: 'monospace' }}
-              whileHover={{ scale: 1.05, backgroundColor: '#92400e' }}
-              whileTap={{ scale: 0.95 }}
+              className="w-full bg-Yellow_Pixel text-blue-600 font-bold py-3 rounded-md mb-3 font-poppins"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8 }}
+              whileHover={{ scale: 1.02, backgroundColor: "#fffbeb" }}
+              whileTap={{ scale: 0.98 }}
               onClick={() => navigate('/login')}
             >
-              LOGIN
+              Login
             </motion.button>
+
             <motion.button
-              className="bg-amber-500 text-amber-900 px-6 py-2 rounded border-2 border-amber-900 font-bold"
-              style={{ fontFamily: 'monospace' }}
-              whileHover={{ scale: 1.05, backgroundColor: '#f59e0b' }}
-              whileTap={{ scale: 0.95 }}
+              className="w-full bg-transparent border-2 border-white text-white font-bold py-3 rounded-md font-poppins"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.9 }}
+              whileHover={{ scale: 1.02, backgroundColor: "rgba(255, 255, 255, 0.1)" }}
+              whileTap={{ scale: 0.98 }}
               onClick={() => navigate('/register')}
             >
-              REGISTER
+              Register
             </motion.button>
-          </motion.div>
+          </div>
         )}
-  
-      </motion.div>
+
+        {/* Footer */}
+        <motion.div
+          className="z-20 mt-8 font-bold mb-10 max-md:mb-6 text-center text-Yellow_Pixel text-sm font-poppins"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1 }}
+        >
+          © 2025 FocusFlow. All rights reserved.
+        </motion.div>
+      </div>
     );
 }
 
-export default Homepage
+export default Homepage;

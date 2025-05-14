@@ -24,7 +24,7 @@ const Register = () => {
     setError('');
     
     try {
-      const url = `https://backend-tutam-sbd9-dean.vercel.app/user/register?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`;
+      const url = `https://focus-flow-be.vercel.app/user/register?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`;
       
       console.log('Sending registration request to:', url);
       const response = await axios.post(url);
@@ -62,194 +62,181 @@ const Register = () => {
     }
   };
 
-  const formVariants = {
-    hidden: { opacity: 0, y: 50 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: { 
-        duration: 0.8,
-        staggerChildren: 0.1
-      }
-    }
-  };
-  
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 }
-  };
-  
-  const floatingNotes = [
-    { top: '15%', left: '10%', rotation: -15, delay: 0.2 },
-    { top: '20%', right: '15%', rotation: 12, delay: 0.5 },
-    { top: '70%', left: '15%', rotation: 8, delay: 0.8 },
-    { top: '65%', right: '10%', rotation: -10, delay: 1.1 },
-  ];
+  const Cloud = () => (
+    <img src="/cloud.svg" alt="Cloud" />
+  );
 
+  const Book = () => (
+    <img src="/book.svg" alt="Book" />
+  );
+
+  const cloudPositions = [
+    { top: '15%', delay: 0, direction: 'right-to-left' },
+    { top: '35%', delay: 2, direction: 'left-to-right' },
+    { top: '60%', delay: 1, direction: 'right-to-left' },
+    { top: '80%', delay: 3, direction: 'left-to-right' }
+  ];
   return (
-    <div className="w-full h-screen bg-amber-600 flex flex-col items-center justify-center overflow-hidden relative">
+    <div className="w-full min-h-screen h-full bg-blue-300 flex flex-col items-center justify-start pt-16 overflow-y-auto relative">      {/* Home button with animation */}
       <motion.div 
-        className="absolute top-6 left-6 z-30"
+        className="absolute top-4 right-4 z-30"
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.6 }}
+      >        <motion.button
+          onClick={() => navigate('/')}
+          className="bg-blue-200 text-blue-500 px-4 py-1 rounded-md flex items-center text-sm font-poppins"
+          whileHover={{ scale: 1.05, backgroundColor: "#bfdbfe" }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+          </svg>
+          Home
+        </motion.button></motion.div>
+        <motion.div 
+        className="flex items-center justify-center z-20 mb-6"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
+        transition={{ duration: 0.8, delay: 0.3 }}
       >
-        <motion.button
-          onClick={() => navigate('/')}
-          className="bg-amber-800 text-amber-200 px-4 py-2 rounded-md border-2 border-amber-900 flex items-center font-bold"
-          whileHover={{ scale: 1.05, backgroundColor: '#92400e' }}
-          whileTap={{ scale: 0.95 }}
-          style={{ fontFamily: 'monospace' }}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
-          HOME
-        </motion.button>
-      </motion.div>
-      {floatingNotes.map((note, index) => (
         <motion.div 
+          className="w-16 h-16 max-md:w-10 max-md:h-10 border-none bg-blue-300 flex items-center justify-center mr-2"
+          animate={{ rotate: [0, 0, 5, -5, 0] }}
+          transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
+        >
+          <Book />
+        </motion.div>       
+         <motion.h1 
+          className="text-4xl text-white font-bold font-poppins" 
+          animate={{ scale: [1, 1.05, 1] }}
+          transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
+        >
+          FocusFlow*
+        </motion.h1>
+      </motion.div>
+      
+      {/* Animated Clouds - with different directions */}
+      {cloudPositions.map((cloud, index) => (
+        <motion.div
           key={index}
           className="absolute z-10"
-          style={{
-            top: note.top,
-            left: note.left,
-            right: note.right,
+          initial={cloud.direction === 'right-to-left' ? { right: -150 } : { left: -150 }}
+          animate={cloud.direction === 'right-to-left' ? { right: '100%' } : { left: '100%' }}
+          transition={{
+            repeat: Infinity,
+            duration: 20 + index * 4,
+            delay: cloud.delay,
+            ease: "linear"
           }}
-          initial={{ opacity: 0, y: -20, rotate: note.rotation }}
-          animate={{ 
-            opacity: 1,
-            y: [0, -10, 0, 10, 0],
-            rotate: note.rotation
-          }}
-          transition={{ 
-            delay: note.delay,
-            y: {
-              repeat: Infinity,
-              duration: 3 + index,
-              ease: "easeInOut"
-            },
-            opacity: { duration: 1 }
-          }}
+          style={{ top: cloud.top }}
         >
-          <div className="w-16 h-20 bg-amber-200 border-2 border-amber-900 shadow-md transform"
-               style={{ 
-                 boxShadow: '2px 2px 0 rgba(120, 53, 15, 0.5)',
-               }}
-          >
-            <div className="border-b border-amber-900 h-3"></div>
-            <div className="flex justify-center items-center h-full">
-              <div className="w-10 h-1 bg-amber-900"></div>
-            </div>
-          </div>
+          <Cloud />
         </motion.div>
-      ))}
+      ))}        {/* Registration Form with animations */}
       <motion.div 
-        className="z-20 bg-amber-200 border-4 border-amber-900 p-8 rounded-lg w-96 shadow-xl"
-        initial="hidden"
-        animate="visible"
-        variants={formVariants}
-      >
-        <motion.h2 
-          variants={itemVariants}
-          className="text-3xl font-bold text-amber-900 mb-6 text-center"
-          style={{ fontFamily: 'monospace' }}
+        className="z-20 bg-Yellow_Pixel p-6 rounded-lg w-96 shadow-md mt-0"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.5 }}
+      >        <motion.h2 
+          className="text-xl font-extrabold text-Blue_Pixel2 mb-4 text-center font-poppins"
+          initial={{ scale: 0.9 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 0.5 }}
         >
-          REGISTER
+          Register
         </motion.h2>
-        
-        {error && (
+          {error && (
           <motion.div 
-            className="bg-red-200 text-red-800 p-2 mb-4 rounded border border-red-400"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
+            className="bg-red-100 text-red-600 p-2 mb-4 rounded text-sm font-poppins"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            transition={{ duration: 0.3 }}
           >
             {error}
           </motion.div>
         )}
         
-        <form onSubmit={handleRegister}>
-          <motion.div className="mb-4" variants={itemVariants}>
-            <label className="block text-amber-900 mb-1 font-medium" style={{ fontFamily: 'monospace' }}>
+        <form onSubmit={handleRegister}>          <div className="mb-3">
+            <label className="block text-blue-400 font-bold mb-1 text-sm font-poppins">
               Name
             </label>
             <motion.input 
-              whileFocus={{ scale: 1.02 }}
+              whileFocus={{ scale: 1.02, borderColor: "#3b82f6" }}
               type="text" 
-              className="w-full p-2 border-2 border-amber-900 bg-amber-50 rounded focus:outline-none focus:ring-2 focus:ring-amber-500"
+              className="w-full p-2 border border-blue-200 rounded focus:outline-none focus:border-blue-400 font-poppins"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
             />
-          </motion.div>
-          
-          <motion.div className="mb-4" variants={itemVariants}>
-            <label className="block text-amber-900 mb-1 font-medium" style={{ fontFamily: 'monospace' }}>
+          </div>
+            <div className="mb-3">
+            <label className="block text-blue-400 font-bold mb-1 text-sm font-poppins">
               Email
             </label>
             <motion.input 
-              whileFocus={{ scale: 1.02 }}
+              whileFocus={{ scale: 1.02, borderColor: "#3b82f6" }}
               type="email" 
-              className="w-full p-2 border-2 border-amber-900 bg-amber-50 rounded focus:outline-none focus:ring-2 focus:ring-amber-500"
+              className="w-full p-2 border border-blue-200 rounded focus:outline-none focus:border-blue-400 font-poppins"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
-          </motion.div>
-          
-          <motion.div className="mb-4" variants={itemVariants}>
-            <label className="block text-amber-900 mb-1 font-medium" style={{ fontFamily: 'monospace' }}>
+          </div>
+            <div className="mb-3">
+            <label className="block text-blue-400 font-bold mb-1 text-sm font-poppins">
               Password
             </label>
             <motion.input 
-              whileFocus={{ scale: 1.02 }}
+              whileFocus={{ scale: 1.02, borderColor: "#3b82f6" }}
               type="password" 
-              className="w-full p-2 border-2 border-amber-900 bg-amber-50 rounded focus:outline-none focus:ring-2 focus:ring-amber-500"
+              className="w-full p-2 border border-blue-200 rounded focus:outline-none focus:border-blue-400 font-poppins"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
-          </motion.div>
-          
-          <motion.div className="mb-6" variants={itemVariants}>
-            <label className="block text-amber-900 mb-1 font-medium" style={{ fontFamily: 'monospace' }}>
+          </div>
+            <div className="mb-4">
+            <label className="block text-blue-400 font-bold mb-1 text-sm font-poppins">
               Confirm Password
             </label>
             <motion.input 
-              whileFocus={{ scale: 1.02 }}
+              whileFocus={{ scale: 1.02, borderColor: "#3b82f6" }}
               type="password" 
-              className="w-full p-2 border-2 border-amber-900 bg-amber-50 rounded focus:outline-none focus:ring-2 focus:ring-amber-500"
+              className="w-full p-2 border border-blue-200 rounded focus:outline-none focus:border-blue-400 font-poppins"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
             />
-          </motion.div>
-          
-          <motion.button 
+          </div>
+            <motion.button 
             type="submit"
-            className="w-full bg-amber-500 text-amber-900 font-bold py-2 px-4 rounded border-2 border-amber-900 hover:bg-amber-400 transition-colors duration-300"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            className="w-full bg-Blue_Pixel3 text-white font-bold py-2 px-4 rounded hover:bg-blue-500 transition-colors font-poppins"
+            whileHover={{ scale: 1.03, backgroundColor: "#3b82f6" }}
+            whileTap={{ scale: 0.97 }}
             disabled={isLoading}
-            style={{ fontFamily: 'monospace' }}
-            variants={itemVariants}
           >
-            {isLoading ? 'REGISTERING...' : 'REGISTER'}
+            {isLoading ? 'Registering...' : 'Register'}
           </motion.button>
         </form>
-        
-        <motion.div 
-          className="mt-4 text-center text-amber-900"
-          style={{ fontFamily: 'monospace' }}
-          variants={itemVariants}
+          <motion.div 
+          className="mt-4 text-center text-xs font-poppins"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1 }}
         >
           Already have an account?{' '}
-          <Link to="/login" className="text-amber-800 underline hover:text-amber-700">
+          <motion.a 
+            href="/login" 
+            className="text-blue-600 hover:underline font-poppins"
+            whileHover={{ scale: 1.1, color: "#2563eb" }}
+          >
             Login here
-          </Link>
+          </motion.a>
         </motion.div>
       </motion.div>
-      
+      <div className='pb-10'></div>
     </div>
   );
 };
