@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Homepage from './pages/homepage';
@@ -31,6 +30,14 @@ function App() {
           <Route path="/pomodoro" element={<Pomodoro />} />
           <Route path="/userprofile" element={<UserProfile />} />
           <Route 
+            path="/landingPage" 
+            element={
+              <ProtectedRoute>
+                <LandingPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
             path="/notes" 
             element={
               <ProtectedRoute>
@@ -38,7 +45,6 @@ function App() {
               </ProtectedRoute>
             } 
           />
-          {/* Error page for any undefined routes */}
           <Route path="/error" element={<ErrorPage />} />
           <Route path="*" element={<ErrorPage />} />
         </Routes>
