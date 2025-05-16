@@ -91,7 +91,7 @@ const Homepage = () => {
     );
 
     return (
-      <div className="w-full h-auto bg-blue-300 flex flex-col items-center overflow-hidden relative">
+      <div className="w-full h-full bg-blue-300 flex flex-col items-center overflow-hidden relative">
         {/* Animated Clouds - with different directions */}
         {cloudPositions.map((cloud, index) => (
           <motion.div
@@ -120,7 +120,7 @@ const Homepage = () => {
             transition={{ delay: 0.5 }}
           >
             <div className="flex items-center justify-between">
-              <h2 className="text-white font-bold mr-4 font-poppins">
+              <h2 className="text-white font-bold mr-4 font-poppins cursor-pointer" onClick={() => navigate('/userprofile')}>
                 Hello, {user.name}
               </h2>
               <motion.button
