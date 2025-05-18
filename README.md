@@ -1,7 +1,7 @@
 # FocusFlow* - Productivity App for Students
 
 <div align="center">
-  <img src="/FocusFlow-FE/public/book.svg" alt="FocusFlow Logo" width="100" />
+  <img src="/public/book.svg" alt="FocusFlow Logo" width="100" />
   <h3>Your Complete Productivity Solution</h3>
   <p><i>Manage notes, time, and learning efficiently</i></p>
 </div>
