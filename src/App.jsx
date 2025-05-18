@@ -7,6 +7,7 @@ import Notes from './pages/notes';
 import Pomodoro from './pages/pomodoro';
 import UserProfile from './pages/userProfile';
 import ErrorPage from './pages/errorPage';
+import LandingPage from './pages/landingPage';
 
 // Protected Route component
 const ProtectedRoute = ({ children }) => {
@@ -20,11 +21,14 @@ const ProtectedRoute = ({ children }) => {
 };
 
 function App() {
+  // Check if user is authenticated for root path
+  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+  
   return (
     <Router>
-      <div className="h-screen">
+      <div className="h-auto">
         <Routes>
-          <Route path="/" element={<Homepage />} />
+          <Route path="/" element={isAuthenticated ? <Navigate to="/landingPage" /> : <Homepage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/pomodoro" element={<Pomodoro />} />

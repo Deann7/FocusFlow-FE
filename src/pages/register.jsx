@@ -77,22 +77,41 @@ const Register = () => {
     { top: '80%', delay: 3, direction: 'left-to-right' }
   ];
   return (
-    <div className="w-full min-h-screen h-full bg-blue-300 flex flex-col items-center justify-start pt-16 overflow-y-auto relative">      {/* Home button with animation */}
-      <motion.div 
+    <div className="w-full min-h-screen h-full bg-blue-300 flex flex-col items-center justify-start pt-16 overflow-y-auto relative">      {/* Home button with animation */}      <motion.div 
         className="absolute top-4 right-4 z-30"
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6 }}
       >        <motion.button
           onClick={() => navigate('/')}
-          className="bg-blue-200 text-blue-500 px-4 py-1 rounded-md flex items-center text-sm font-poppins"
-          whileHover={{ scale: 1.05, backgroundColor: "#bfdbfe" }}
-          whileTap={{ scale: 0.95 }}
+          className="bg-blue-400/30 backdrop-blur-sm text-white px-5 py-2 rounded-full flex items-center text-sm font-poppins border border-white/20"
+          whileHover={{ 
+            scale: 1.08, 
+            backgroundColor: "rgba(96, 165, 250, 0.5)",
+            boxShadow: "0 0 15px rgba(255, 255, 255, 0.5)"
+          }}
+          whileTap={{ scale: 0.92 }}
+          initial={{ boxShadow: "0 0 0px rgba(255, 255, 255, 0)" }}
+          animate={{ 
+            boxShadow: ["0 0 0px rgba(255, 255, 255, 0)", "0 0 10px rgba(255, 255, 255, 0.3)", "0 0 0px rgba(255, 255, 255, 0)"],
+          }}
+          transition={{ 
+            boxShadow: { 
+              repeat: Infinity, 
+              duration: 2,
+            }
+          }}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-          </svg>
-          Home
+          <motion.div 
+            className="mr-2"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+          </motion.div>
+          <span>Home</span>
         </motion.button></motion.div>
         <motion.div 
         className="flex items-center justify-center z-20 mb-6"
@@ -115,8 +134,6 @@ const Register = () => {
           FocusFlow*
         </motion.h1>
       </motion.div>
-      
-      {/* Animated Clouds - with different directions */}
       {cloudPositions.map((cloud, index) => (
         <motion.div
           key={index}

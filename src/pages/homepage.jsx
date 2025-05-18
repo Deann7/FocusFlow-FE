@@ -111,30 +111,6 @@ const Homepage = () => {
           </motion.div>
         ))}
         
-        {/* User greeting if logged in */}
-        {isAuthenticated && user && (
-          <motion.div 
-            className="absolute top-4 right-4 z-30 bg-blue-400 px-4 py-2 rounded-md"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-          >
-            <div className="flex items-center justify-between">
-              <h2 className="text-white font-bold mr-4 font-poppins cursor-pointer" onClick={() => navigate('/userprofile')}>
-                Hello, {user.name}
-              </h2>
-              <motion.button
-                className="bg-blue-500 text-white px-3 py-1 rounded border border-blue-600 text-sm font-poppins"
-                whileHover={{ scale: 1.05, backgroundColor: '#3b82f6' }}
-                whileTap={{ scale: 0.95 }}
-                onClick={handleLogout}
-              >
-                Logout
-              </motion.button>
-            </div>
-          </motion.div>
-        )}
-        
         {/* Logo and Heading */}
         <motion.div 
           className="mt-16 flex items-center justify-center z-20"

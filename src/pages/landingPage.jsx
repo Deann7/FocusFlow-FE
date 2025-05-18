@@ -31,7 +31,7 @@ const LandingPage = () => {
       <Navbar />
 
       {/* Main content */}
-      <div className="w-full max-w-4xl px-4 py-6 flex flex-col items-center">
+      <div className="w-full max-w-6xl px-4 py-6 flex flex-col items-center">
         {/* Animated Clouds - with different directions */}
         {cloudPositions.map((cloud, index) => (
           <motion.div
@@ -58,16 +58,16 @@ const LandingPage = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <h1 className="text-2xl font-bold text-white font-poppins mb-2">
+          <h1 className="text-3xl font-bold text-white font-poppins mb-2">
             Welcome Back, {user?.name || 'Friend'}!
           </h1>
-          <p className="text-white/80 font-poppins">
+          <p className="text-white/80 font-poppins text-lg">
             Your personal productivity hub. What would you like to focus on today?
           </p>
         </motion.div>
         
-        {/* Feature Cards with blur effect similar to the image */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-3xl z-20">
+        {/* Feature Cards in a 2x2 grid layout */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full max-w-5xl z-20">
           {/* Notes Card */}
           <motion.div
             className="bg-white/20 backdrop-blur-md rounded-lg p-6 border border-white/30 shadow-lg cursor-pointer"
@@ -91,8 +91,8 @@ const LandingPage = () => {
               </p>
             </div>
           </motion.div>
-
-          {/* Pomodoro Timer Card */}
+          
+          {/* Pomodoro Card */}
           <motion.div
             className="bg-white/20 backdrop-blur-md rounded-lg p-6 border border-white/30 shadow-lg cursor-pointer"
             initial={{ opacity: 0, y: 20 }}
@@ -116,37 +116,12 @@ const LandingPage = () => {
             </div>
           </motion.div>
 
-          {/* Expense Tracker Card */}
-          <motion.div
-            className="bg-white/20 backdrop-blur-md rounded-lg p-6 border border-white/30 shadow-lg cursor-pointer"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            whileHover={{ 
-              scale: 1.03,
-              boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.2)"
-            }}
-            whileTap={{ scale: 0.97 }}
-          >
-            <div className="flex flex-col items-center text-center">
-              <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold text-white font-poppins mb-2">Expense Tracker</h3>
-              <p className="text-white/70 text-sm font-poppins">
-                Track and visualize your spending
-              </p>
-            </div>
-          </motion.div>
-
           {/* Flashcards Card */}
           <motion.div
             className="bg-white/20 backdrop-blur-md rounded-lg p-6 border border-white/30 shadow-lg cursor-pointer"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
+            transition={{ delay: 0.4 }}
             whileHover={{ 
               scale: 1.03,
               boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.2)"
@@ -164,7 +139,55 @@ const LandingPage = () => {
               </p>
             </div>
           </motion.div>
+          
+          {/* User Profile Card */}
+          <motion.div
+            className="bg-white/20 backdrop-blur-md rounded-lg p-6 border border-white/30 shadow-lg cursor-pointer"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            whileHover={{ 
+              scale: 1.03,
+              boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.2)"
+            }}
+            whileTap={{ scale: 0.97 }}
+            onClick={() => navigate('/userProfile')}
+          >
+            <div className="flex flex-col items-center text-center">
+              <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mb-4">
+                <img src="/profile.svg" alt="Profile" className="w-6 h-6" />
+              </div>
+              <h3 className="text-xl font-bold text-white font-poppins mb-2">User Profile</h3>
+              <p className="text-white/70 text-sm font-poppins">
+                View and manage your profile
+              </p>
+            </div>
+          </motion.div>
         </div>
+        
+        {/* Promotional Banner */}
+        <motion.div
+          className="mt-8 w-full bg-gradient-to-r from-purple-500/30 to-blue-500/30 backdrop-blur-md rounded-lg p-6 border border-white/30 shadow-lg z-20"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+        >
+          <div className="flex flex-col md:flex-row items-center justify-between">
+            <div className="mb-4 md:mb-0">
+              <h3 className="text-xl font-bold text-white font-poppins mb-2">Boost Your Productivity</h3>
+              <p className="text-white/70 text-sm font-poppins">
+                FocusFlow helps you manage your time, organize your notes, and learn efficiently.
+              </p>
+            </div>            <motion.button
+              className="bg-white/20 backdrop-blur-md text-white px-6 py-2 rounded-md border border-white/30 font-poppins"
+              whileHover={{ scale: 1.03, backgroundColor: 'rgba(255, 255, 255, 0.3)' }}
+              whileTap={{ scale: 0.97 }}
+              onClick={() => window.open('https://www.forbes.com/councils/forbescoachescouncil/2023/12/13/practical-steps-to-boost-your-productivity/', '_blank')}
+            >
+              Learn More
+            </motion.button>
+          </div>
+        </motion.div>
       </div>
 
       {/* Footer */}
