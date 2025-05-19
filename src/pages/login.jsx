@@ -45,7 +45,7 @@ const Login = () => {
         
         // Small delay to ensure localStorage is updated before redirect
         setTimeout(() => {
-          navigate('/notes');
+          navigate('/landingPage');
         }, 300);
       } else {
         setError(response.data.message || 'Login failed');
@@ -96,6 +96,7 @@ const Login = () => {
     <div className="w-full h-screen bg-blue-300 flex flex-col items-center justify-center overflow-hidden relative">
       {/* Home button with animation */}
       <motion.div 
+       onClick={() => navigate('/')}
         className="absolute top-4 left-4 z-30"
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}

@@ -79,6 +79,7 @@ const Register = () => {
   return (
     <div className="w-full min-h-screen h-full bg-blue-300 flex flex-col items-center justify-start pt-16 overflow-y-auto relative">      {/* Home button with animation */}      <motion.div 
         className="absolute top-4 right-4 z-30"
+
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6 }}
@@ -104,6 +105,7 @@ const Register = () => {
         >
           <motion.div 
             className="mr-2"
+            onClick={() => navigate('/')}
             animate={{ rotate: 360 }}
             transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
           >

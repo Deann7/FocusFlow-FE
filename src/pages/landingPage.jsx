@@ -58,16 +58,16 @@ const LandingPage = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <h1 className="text-3xl font-bold text-white font-poppins mb-2">
+          <h1 className="text-3xl font-bold text-Yellow_Pixel font-poppins mb-2">
             Welcome Back, {user?.name || 'Friend'}!
           </h1>
-          <p className="text-white/80 font-poppins text-lg">
+          <p className="text-Yellow_Pixel font-poppins text-lg">
             Your personal productivity hub. What would you like to focus on today?
           </p>
         </motion.div>
         
         {/* Feature Cards in a 2x2 grid layout */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full max-w-5xl z-20">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full max-w-5xl z-20 text-Yellow_Pixel">
           {/* Notes Card */}
           <motion.div
             className="bg-white/20 backdrop-blur-md rounded-lg p-6 border border-white/30 shadow-lg cursor-pointer"
