@@ -222,7 +222,7 @@ const Homepage = () => {
 
           {/* Flashcards Card - Now a button with SweetAlert */}
           <motion.button
-            onClick={() => handleNavigate('flashcard', 'Flashcards')}
+            onClick={() => handleNavigate('flashcardset', 'FlashcCardSet')}
             className="w-full text-left bg-white rounded-lg shadow-md p-5 mb-4 cursor-pointer border border-transparent hover:border-blue-200"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}

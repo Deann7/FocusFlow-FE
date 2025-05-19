@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Homepage from './pages/homepage';
@@ -8,6 +7,9 @@ import Notes from './pages/notes';
 import Pomodoro from './pages/pomodoro';
 import UserProfile from './pages/userProfile';
 import ErrorPage from './pages/errorPage';
+import FlashCardSet from './pages/flashCardSet';
+import FlashCardDetail from './pages/flashCardDetail';
+import StudyFlashCard from './pages/studyFlashCard';
 
 // Protected Route component
 const ProtectedRoute = ({ children }) => {
@@ -30,6 +32,12 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/pomodoro" element={<Pomodoro />} />
           <Route path="/userprofile" element={<UserProfile />} />
+          <Route path="/flashcardset" element={<FlashCardSet />} />
+          <Route path="/flashcardset/:setId" element={<FlashCardDetail />} />
+          <Route path="/studyflashcard/:setId" element={<StudyFlashCard />} />
+          
+          {/* Protected routes */}
+          
           <Route 
             path="/notes" 
             element={

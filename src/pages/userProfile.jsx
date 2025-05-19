@@ -1,11 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const UserProfile = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('profile');
   const [userData, setUserData] = useState(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editForm, setEditForm] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  
+  const apiUrl = 'https://focus-flow-be.vercel.app/user';
   
   // Get user data from localStorage
   useEffect(() => {
@@ -27,9 +40,137 @@ const UserProfile = () => {
     getUserData();
   }, [navigate]);
 
-    // Handle tab change
-    useEffect(() => {() => {console.log('Tab changed to:', activeTab);}}, [activeTab]);
-  
+  // Handle tab change
+  useEffect(() => {() => {console.log('Tab changed to:', activeTab);}}, [activeTab]);
+
+  // Function to open the unified edit modal
+  const openEditModal = () => {
+    setEditForm({
+      name: userData.name || '',
+      email: userData.email || '',
+      password: '',
+      confirmPassword: ''
+    });
+    
+    setError('');
+    setSuccess('');
+    setShowEditModal(true);
+  };
+
+  // Function to close the edit modal
+  const closeEditModal = () => {
+    setShowEditModal(false);
+    setError('');
+    setSuccess('');
+  };
+
+  // Handle input changes
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditForm(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  // Function to update user data
+  const updateUserData = async () => {
+    if (loading) return;
+    
+    setLoading(true);
+    setError('');
+    setSuccess('');
+    
+    try {
+      // Validate inputs
+      if (!editForm.name.trim()) {
+        setError('Name cannot be empty');
+        setLoading(false);
+        return;
+      }
+      
+      if (!editForm.email.trim()) {
+        setError('Email cannot be empty');
+        setLoading(false);
+        return;
+      }
+      
+      // Only validate password if it's provided (optional update)
+      if (editForm.password.trim() && editForm.password !== editForm.confirmPassword) {
+        setError('Passwords do not match');
+        setLoading(false);
+        return;
+      }
+      
+      // Create a copy of userData for updates
+      let updatedData = { ...userData };
+      let updatePromises = [];
+      
+      // Update name if changed
+      if (editForm.name !== userData.name) {
+        const nameUpdateUrl = `${apiUrl}/update/name?id=${userData.id}&name=${encodeURIComponent(editForm.name)}`;
+        updatePromises.push(axios.put(nameUpdateUrl));
+        updatedData.name = editForm.name;
+      }
+      
+      // Update email if changed
+      if (editForm.email !== userData.email) {
+        const emailUpdateUrl = `${apiUrl}/update/email?id=${userData.id}&email=${encodeURIComponent(editForm.email)}`;
+        updatePromises.push(axios.put(emailUpdateUrl));
+        updatedData.email = editForm.email;
+      }
+      
+      // Update password if provided
+      if (editForm.password.trim()) {
+        const passwordUpdateUrl = `${apiUrl}/update/password?id=${userData.id}&password=${encodeURIComponent(editForm.password)}`;
+        updatePromises.push(axios.put(passwordUpdateUrl));
+      }
+      
+      // Only proceed if there are changes to update
+      if (updatePromises.length === 0) {
+        setError('No changes were made');
+        setLoading(false);
+        return;
+      }
+      
+      // Execute all update requests
+      const results = await Promise.allSettled(updatePromises);
+      
+      // Check if all promises were fulfilled
+      const allSuccessful = results.every(result => result.status === 'fulfilled' && result.value.data.success);
+      
+      if (allSuccessful) {
+        // Update localStorage
+        localStorage.setItem('user', JSON.stringify(updatedData));
+        setUserData(updatedData);
+        
+        setSuccess('Your profile has been updated successfully!');
+        
+        // Close modal after a short delay
+        setTimeout(() => {
+          closeEditModal();
+        }, 2000);
+      } else {
+        // Find first error
+        const firstError = results.find(result => result.status === 'rejected' || !result.value.data.success);
+        if (firstError && firstError.status === 'fulfilled') {
+          setError(firstError.value.data.message || 'Failed to update profile');
+        } else {
+          setError('Failed to update profile');
+        }
+      }
+    } catch (err) {
+      console.error('Error updating profile:', err);
+      
+      if (err.response && err.response.data) {
+        setError(err.response.data.message || 'Error updating profile');
+      } else {
+        setError('An error occurred while updating your profile');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Cloud animation components
   const Cloud = () => (
@@ -63,7 +204,7 @@ const UserProfile = () => {
     },
     {
       question: "Can I change my password?",
-      answer: "Currently, password change functionality is under development. Please contact support if you need to reset your password."
+      answer: "Yes, you can update your password anytime from the User Profile section by clicking the Edit Profile button."
     },
     {
       question: "Is my data secure?",
@@ -183,25 +324,49 @@ const UserProfile = () => {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                    <img src="/profile.svg" alt="Profile" className="w-fit h-fit mr-2" />
-
+                  <img src="/profile.svg" alt="Profile" className="w-fit h-fit mr-2" />
                 )}
               </div>
               
               {/* User details */}
-              <h2 className="text-xl md:text-2xl font-bold text-white mb-2 font-poppins">
-                {userData.name}
-              </h2>
+              <div className="w-full space-y-4 mb-6">
+                {/* Name */}
+                <div className="bg-white bg-opacity-20 p-3 rounded-md">
+                  <div className="text-blue-100 text-xs font-medium mb-1">Name</div>
+                  <div className="text-white font-medium">{userData.name}</div>
+                </div>
+                
+                {/* Email */}
+                <div className="bg-white bg-opacity-20 p-3 rounded-md">
+                  <div className="text-blue-100 text-xs font-medium mb-1">Email</div>
+                  <div className="text-white font-medium">{userData.email}</div>
+                </div>
+                
+                {/* Password */}
+                <div className="bg-white bg-opacity-20 p-3 rounded-md">
+                  <div className="text-blue-100 text-xs font-medium mb-1">Password</div>
+                  <div className="text-white font-medium">••••••••</div>
+                </div>
+              </div>
               
-              <p className="text-white mb-6 font-poppins">
-                {userData.email}
-              </p>
+              {/* Edit Profile Button */}
+              <motion.button
+                className="bg-blue-400 text-white px-6 py-2 rounded-md font-bold shadow-md font-poppins mb-4 w-full flex items-center justify-center"
+                whileHover={{ scale: 1.02, backgroundColor: "#60a5fa" }}
+                whileTap={{ scale: 0.98 }}
+                onClick={openEditModal}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                </svg>
+                Edit Profile
+              </motion.button>
               
               {/* Logout button */}
               <motion.button
-                className="bg-blue-500 text-white px-6 py-2 rounded-md font-bold shadow-md font-poppins"
-                whileHover={{ scale: 1.05, backgroundColor: "#3b82f6" }}
-                whileTap={{ scale: 0.95 }}
+                className="bg-blue-500 text-white px-6 py-2 rounded-md font-bold shadow-md font-poppins w-full"
+                whileHover={{ scale: 1.02, backgroundColor: "#3b82f6" }}
+                whileTap={{ scale: 0.98 }}
                 onClick={() => {
                   localStorage.removeItem('user');
                   localStorage.removeItem('isAuthenticated');
@@ -243,15 +408,161 @@ const UserProfile = () => {
           )}
         </motion.div>
       </div>
+      
       {/* Footer */}
-              <motion.div
-                className="z-20 mt-8 font-bold mb-10 max-md:mb-6 text-center text-Yellow_Pixel text-sm font-poppins"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1 }}
-              >
-                © 2025 FocusFlow. All rights reserved.
-              </motion.div>
+      <motion.div
+        className="z-20 mt-8 font-bold mb-10 max-md:mb-6 text-center text-Yellow_Pixel text-sm font-poppins"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1 }}
+      >
+        © 2025 FocusFlow. All rights reserved.
+      </motion.div>
+      
+      {/* Unified Edit Profile Modal */}
+      <AnimatePresence>
+        {showEditModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center">
+            {/* Backdrop dengan z-index yang lebih rendah */}
+            <motion.div 
+              className="absolute inset-0 bg-black bg-opacity-50"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={closeEditModal}
+            />
+            
+            {/* Modal dengan position relative agar tetap di dalam parent flex */}
+            <motion.div 
+              className="relative bg-white rounded-lg shadow-xl p-6 w-11/12 max-w-md m-4"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: "spring", damping: 20 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-bold text-blue-500 font-poppins">
+                  Edit Profile
+                </h3>
+                <button 
+                  className="text-gray-400 hover:text-gray-600"
+                  onClick={closeEditModal}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              
+              {error && (
+                <div className="bg-red-100 text-red-600 p-3 rounded-md mb-4 text-sm">
+                  {error}
+                </div>
+              )}
+              
+              {success && (
+                <div className="bg-green-100 text-green-600 p-3 rounded-md mb-4 text-sm">
+                  {success}
+                </div>
+              )}
+              
+              <div className="space-y-4">
+                {/* Name input */}
+                <div>
+                  <label className="block text-blue-500 text-sm font-semibold mb-1">
+                    Name
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    className="w-full p-3 bg-blue-50 border border-blue-200 rounded text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                    placeholder="Enter your name"
+                    value={editForm.name}
+                    onChange={handleInputChange}
+                  />
+                </div>
+                
+                {/* Email input */}
+                <div>
+                  <label className="block text-blue-500 text-sm font-semibold mb-1">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    className="w-full p-3 bg-blue-50 border border-blue-200 rounded text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                    placeholder="Enter your email"
+                    value={editForm.email}
+                    onChange={handleInputChange}
+                  />
+                </div>
+                
+                {/* Password input (optional) */}
+                <div>
+                  <label className="block text-blue-500 text-sm font-semibold mb-1">
+                    New Password (optional)
+                  </label>
+                  <input
+                    type="password"
+                    name="password"
+                    className="w-full p-3 bg-blue-50 border border-blue-200 rounded text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                    placeholder="Leave blank to keep current password"
+                    value={editForm.password}
+                    onChange={handleInputChange}
+                  />
+                </div>
+                
+                {/* Confirm password input */}
+                <div>
+                  <label className="block text-blue-500 text-sm font-semibold mb-1">
+                    Confirm New Password
+                  </label>
+                  <input
+                    type="password"
+                    name="confirmPassword"
+                    className="w-full p-3 bg-blue-50 border border-blue-200 rounded text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                    placeholder="Confirm new password"
+                    value={editForm.confirmPassword}
+                    onChange={handleInputChange}
+                    disabled={!editForm.password}
+                  />
+                </div>
+                
+                {/* Action buttons */}
+                <div className="flex justify-end space-x-3 pt-2">
+                  <button
+                    type="button"
+                    className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md font-poppins hover:bg-gray-300 text-sm"
+                    onClick={closeEditModal}
+                    disabled={loading}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    className="px-4 py-2 bg-blue-400 text-white rounded-md font-poppins hover:bg-blue-500 text-sm flex items-center"
+                    onClick={updateUserData}
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <>
+                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Updating...
+                      </>
+                    ) : (
+                      'Save Changes'
+                    )}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
