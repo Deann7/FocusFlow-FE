@@ -39,6 +39,14 @@ function App() {
           {/* Protected routes */}
           
           <Route 
+            path="/landingPage" 
+            element={
+              <ProtectedRoute>
+                <LandingPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
             path="/notes" 
             element={
               <ProtectedRoute>
@@ -46,7 +54,6 @@ function App() {
               </ProtectedRoute>
             } 
           />
-          {/* Error page for any undefined routes */}
           <Route path="/error" element={<ErrorPage />} />
           <Route path="*" element={<ErrorPage />} />
         </Routes>
