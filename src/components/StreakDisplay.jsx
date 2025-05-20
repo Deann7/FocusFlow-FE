@@ -7,7 +7,7 @@ const StreakDisplay = ({ userId }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   
-  const apiUrl = 'http://focus-flow-be.vercel.app';
+  const apiUrl = 'https://focus-flow-be.vercel.app';
   
   // Fetch streak data
   useEffect(() => {

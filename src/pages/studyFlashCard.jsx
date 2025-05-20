@@ -13,7 +13,7 @@ const StudyFlashCard = () => {
   const [error, setError] = useState(null);
   
   // API URL - use the same port as your other endpoints
-  const apiUrl = 'http://focus-flow-be.vercel.app';
+  const apiUrl = 'https://focus-flow-be.vercel.app';
 
   // Function to get user ID from localStorage
   const getUserId = () => {
@@ -211,42 +211,53 @@ const StudyFlashCard = () => {
             <div className="w-10 h-10 border-4 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
           </motion.div>
         ) : flashcardSet?.cards?.length > 0 ? (
-          <div className="perspective-1000 w-full h-64 md:h-80 mb-6">
-            <motion.div 
-              className={`w-full h-full relative cursor-pointer transition-transform duration-500 transform-style-3d ${
-                showAnswer ? 'rotate-y-180' : ''
-              }`}
+          <div className="w-full h-64 md:h-80 mb-6">
+            <div 
+              className="w-full h-full relative cursor-pointer"
               onClick={flipCard}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              whileHover={{ boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)" }}
             >
-              {/* Front side - Question */}
-              <div className="absolute inset-0 w-full h-full bg-blue-400 bg-opacity-70 backdrop-filter backdrop-blur-sm rounded-lg shadow-md p-6 flex items-center justify-center backface-hidden">
-                <div className="text-center">
-                  <div className="text-xs text-white font-semibold mb-4">QUESTION</div>
-                  <p className="text-white font-poppins text-xl font-semibold max-h-40 overflow-y-auto">
-                    {flashcardSet.cards[currentCardIndex].front}
-                  </p>
-                  <div className="absolute bottom-3 text-center left-0 right-0 text-xs text-white">
-                    Click to flip
-                  </div>
-                </div>
-              </div>
-              
-              {/* Back side - Answer */}
-              <div className="absolute inset-0 w-full h-full bg-white bg-opacity-90 backdrop-filter backdrop-blur-sm rounded-lg shadow-md p-6 flex items-center justify-center backface-hidden rotate-y-180">
-                <div className="text-center">
-                  <div className="text-xs text-blue-500 font-semibold mb-4">ANSWER</div>
-                  <p className="text-blue-500 font-poppins text-lg max-h-40 overflow-y-auto">
-                    {flashcardSet.cards[currentCardIndex].back}
-                  </p>
-                  <div className="absolute bottom-3 text-center left-0 right-0 text-xs text-blue-400">
-                    Click to flip back
-                  </div>
-                </div>
-              </div>
-            </motion.div>
+              <AnimatePresence initial={false} mode="wait">
+                {!showAnswer ? (
+                  <motion.div 
+                    key="front"
+                    className="absolute inset-0 w-full h-full bg-blue-400 bg-opacity-70 backdrop-filter backdrop-blur-sm rounded-lg shadow-md p-6 flex items-center justify-center"
+                    initial={{ rotateY: 90, opacity: 0 }}
+                    animate={{ rotateY: 0, opacity: 1 }}
+                    exit={{ rotateY: -90, opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <div className="text-center">
+                      <div className="text-xs text-white font-semibold mb-4">QUESTION</div>
+                      <p className="text-white font-poppins text-xl font-semibold max-h-40 overflow-y-auto">
+                        {flashcardSet.cards[currentCardIndex].front}
+                      </p>
+                      <div className="absolute bottom-3 text-center left-0 right-0 text-xs text-white">
+                        Click to flip
+                      </div>
+                    </div>
+                  </motion.div>
+                ) : (
+                  <motion.div 
+                    key="back"
+                    className="absolute inset-0 w-full h-full bg-white bg-opacity-90 backdrop-filter backdrop-blur-sm rounded-lg shadow-md p-6 flex items-center justify-center"
+                    initial={{ rotateY: -90, opacity: 0 }}
+                    animate={{ rotateY: 0, opacity: 1 }}
+                    exit={{ rotateY: 90, opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <div className="text-center">
+                      <div className="text-xs text-blue-500 font-semibold mb-4">ANSWER</div>
+                      <p className="text-blue-500 font-poppins text-lg max-h-40 overflow-y-auto">
+                        {flashcardSet.cards[currentCardIndex].back}
+                      </p>
+                      <div className="absolute bottom-3 text-center left-0 right-0 text-xs text-blue-400">
+                        Click to flip back
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
         ) : (
           <motion.div 
