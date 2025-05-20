@@ -18,7 +18,7 @@ const FlashCardDetail = () => {
   });
   
   // API URL - use the same port as your other endpoints
-  const apiUrl = 'http://focus-flow-be.vercel.app';
+  const apiUrl = 'https://focus-flow-be.vercel.app';
 
   // Function to get user ID from localStorage
   const getUserId = () => {

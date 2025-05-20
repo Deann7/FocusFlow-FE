@@ -127,7 +127,7 @@ const LandingPage = () => {
               boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.2)"
             }}
             whileTap={{ scale: 0.97 }}
-            onClick={() => navigate('/flashcard')}
+            onClick={() => navigate('/flashcardset')}
           >
             <div className="flex flex-col items-center text-center">
               <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mb-4">

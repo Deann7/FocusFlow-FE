@@ -27,7 +27,7 @@ const Pomodoro = () => {
   });
   
   // URL API backend - gunakan localhost:4015
-  const apiUrl = 'http://focus-flow-be.vercel.app';
+  const apiUrl = 'https://focus-flow-be.vercel.app';
   
   // Task-related states
   const [currentTask, setCurrentTask] = useState(() => {
