@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useParams } from 'react-router-dom';
+import axios from 'axios';
 
 const StudyFlashCard = () => {
   const navigate = useNavigate();
@@ -9,32 +10,80 @@ const StudyFlashCard = () => {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [showAnswer, setShowAnswer] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   
-  // Fetch flashcard set data
+  // API URL - use the same port as your other endpoints
+  const apiUrl = 'http://focus-flow-be.vercel.app';
+
+  // Function to get user ID from localStorage
+  const getUserId = () => {
+    try {
+      const userData = localStorage.getItem('user');
+      if (!userData) {
+        return null;
+      }
+      
+      const user = JSON.parse(userData);
+      if (!user || !user.id) {
+        return null;
+      }
+      
+      return user.id;
+    } catch (error) {
+      console.error("Error getting user ID:", error);
+      return null;
+    }
+  };
+  
+  // Fetch flashcard set data from the database
   useEffect(() => {
     const fetchFlashcardSet = async () => {
+      if (!setId) {
+        setError("No flashcard set ID provided");
+        setIsLoading(false);
+        return;
+      }
+      
       try {
         setIsLoading(true);
+        console.log("Fetching flashcard set with ID:", setId);
         
-        // This would be replaced with an actual API call in production
-        // For now, let's simulate loading
-        setTimeout(() => {
-          // Mock data - would be replaced with API call
-          const mockSet = {
+        // Actual API call to backend
+        const response = await axios.get(`${apiUrl}/flashcard/set/${setId}/cards`, {
+          timeout: 8000
+        });
+        
+        console.log("API response:", response.data);
+        
+        if (response.data.success) {
+          setFlashcardSet(response.data.payload);
+          setError(null);
+        } else {
+          setError(response.data.message || "Failed to load flashcard set");
+          // Fallback to empty set with a useful message
+          setFlashcardSet({
             id: setId,
-            name: "Biology Terms",
-            cards: [
-              { id: 1, front: "What is photosynthesis?", back: "The process by which plants use sunlight to synthesize foods from carbon dioxide and water" },
-              { id: 2, front: "What is mitosis?", back: "A process of cell division that results in two identical daughter cells" },
-              { id: 3, front: "What is cellular respiration?", back: "The process by which organisms break down glucose to release energy" }
-            ]
-          };
-          
-          setFlashcardSet(mockSet);
-          setIsLoading(false);
-        }, 1000);
+            name: "Error Loading Set",
+            cards: []
+          });
+        }
       } catch (error) {
         console.error("Error fetching flashcard set:", error);
+        
+        // Handle error cases specifically
+        if (!error.response) {
+          setError("Network error - please check your connection");
+        } else {
+          setError(error.response.data?.message || "An error occurred while loading flashcards");
+        }
+        
+        // Setting empty set as fallback
+        setFlashcardSet({
+          id: setId,
+          name: "Error Loading Set",
+          cards: []
+        });
+      } finally {
         setIsLoading(false);
       }
     };
@@ -61,7 +110,11 @@ const StudyFlashCard = () => {
   };
   
   const handleBackToSet = () => {
-    navigate(`/flashcard/${setId}`);
+    // Perbaiki route untuk mengarah ke /flashcardset/${setId}
+    navigate(`/flashcardset/${setId}`);
+    
+    // Jika masih error, coba navigasi ke halaman utama flashcard sets
+    // navigate('/flashcardset');
   };
   
   const Cloud = () => (
@@ -160,34 +213,36 @@ const StudyFlashCard = () => {
         ) : flashcardSet?.cards?.length > 0 ? (
           <div className="perspective-1000 w-full h-64 md:h-80 mb-6">
             <motion.div 
-              className={`w-full h-full relative cursor-pointer transition-transform flip-card ${showAnswer ? 'flipped' : ''}`}
+              className={`w-full h-full relative cursor-pointer transition-transform duration-500 transform-style-3d ${
+                showAnswer ? 'rotate-y-180' : ''
+              }`}
               onClick={flipCard}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               whileHover={{ boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)" }}
             >
               {/* Front side - Question */}
-              <div className={`absolute inset-0 w-full h-full bg-blue-400 bg-opacity-70 backdrop-filter backdrop-blur-sm rounded-lg shadow-md p-6 flex items-center justify-center backface-hidden ${showAnswer ? 'hidden' : ''}`}>
+              <div className="absolute inset-0 w-full h-full bg-blue-400 bg-opacity-70 backdrop-filter backdrop-blur-sm rounded-lg shadow-md p-6 flex items-center justify-center backface-hidden">
                 <div className="text-center">
                   <div className="text-xs text-white font-semibold mb-4">QUESTION</div>
-                  <p className="text-white font-poppins text-xl font-semibold">
+                  <p className="text-white font-poppins text-xl font-semibold max-h-40 overflow-y-auto">
                     {flashcardSet.cards[currentCardIndex].front}
                   </p>
                   <div className="absolute bottom-3 text-center left-0 right-0 text-xs text-white">
-                    Click to see answer
+                    Click to flip
                   </div>
                 </div>
               </div>
               
               {/* Back side - Answer */}
-              <div className={`absolute inset-0 w-full h-full bg-white bg-opacity-90 backdrop-filter backdrop-blur-sm rounded-lg shadow-md p-6 flex items-center justify-center backface-hidden ${showAnswer ? '' : 'hidden'}`}>
+              <div className="absolute inset-0 w-full h-full bg-white bg-opacity-90 backdrop-filter backdrop-blur-sm rounded-lg shadow-md p-6 flex items-center justify-center backface-hidden rotate-y-180">
                 <div className="text-center">
                   <div className="text-xs text-blue-500 font-semibold mb-4">ANSWER</div>
-                  <p className="text-blue-500 font-poppins text-lg">
+                  <p className="text-blue-500 font-poppins text-lg max-h-40 overflow-y-auto">
                     {flashcardSet.cards[currentCardIndex].back}
                   </p>
                   <div className="absolute bottom-3 text-center left-0 right-0 text-xs text-blue-400">
-                    Click to see question
+                    Click to flip back
                   </div>
                 </div>
               </div>

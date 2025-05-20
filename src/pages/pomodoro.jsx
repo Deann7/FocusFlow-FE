@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import StreakDisplay from '../components/StreakDisplay';
 
 const Pomodoro = () => {
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ const Pomodoro = () => {
   });
   
   // URL API backend - gunakan localhost:4015
-  const apiUrl = 'http://localhost:4105';
+  const apiUrl = 'http://focus-flow-be.vercel.app';
   
   // Task-related states
   const [currentTask, setCurrentTask] = useState(() => {
@@ -729,14 +730,19 @@ const Pomodoro = () => {
 
       {/* Konten utama */}
       <div className="w-full max-w-md px-4 mx-auto flex flex-col items-center z-10">
-        <motion.h1
-          className="text-2xl md:text-3xl font-bold text-white mb-4 md:mb-6 font-poppins text-center"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          Pomodoro Timer
-        </motion.h1>
+        <div className="flex items-center justify-between w-full mb-4">
+          <motion.h1
+            className="text-2xl md:text-3xl font-bold text-white font-poppins"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            Pomodoro Timer
+          </motion.h1>
+          
+          {/* Add Streak Display component here */}
+          {userId && <StreakDisplay userId={userId} />}
+        </div>
         
         {/* Tampilkan pesan error sinkronisasi jika ada */}
         {syncError && (
@@ -1134,10 +1140,10 @@ const Pomodoro = () => {
                 >
                   {loading ? (
                     <div className="flex items-center justify-center">
-                      <motion.div 
+                      <motion.div
                         animate={{ rotate: 360 }}
                         transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-                        className="w-5 h-5 rounded-full border-2 border-white border-t-transparent mr-2"
+                        className="w-4 h-4 rounded-full border-2 border-white border-t-transparent mr-2"
                       />
                       Saving...
                     </div>
@@ -1241,8 +1247,13 @@ const Pomodoro = () => {
           </div>
         )}
       </AnimatePresence>
+
+      {/* Streak Display Component */}
+      <StreakDisplay userId={userId} />
     </div>
   );
 };
+
+// Note: StreakDisplay component is now imported from '../components/StreakDisplay'
 
 export default Pomodoro;
