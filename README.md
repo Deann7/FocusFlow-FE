@@ -61,19 +61,67 @@ FocusFlow/
 
 The frontend is built with React and Vite, organized with a clean component structure:
 
-- `src/components/`: Reusable UI components
-- `src/pages/`: Application pages and views
-- `src/assets/`: Static assets and resources
+```
+FocusFlow-FE/
+├── public/                 # Aset statis: SVG, gambar
+├── src/
+│   ├── components/         # Komponen UI yang dapat digunakan kembali
+│   │   ├── Cards.jsx       # Komponen kartu untuk notes
+│   │   ├── StreakDisplay.jsx # Komponen untuk menampilkan daily streak
+│   │   └── ...
+│   ├── pages/              # Halaman aplikasi
+│   │   ├── homepage.jsx    # Halaman utama
+│   │   ├── login.jsx       # Halaman login
+│   │   ├── register.jsx    # Halaman pendaftaran
+│   │   ├── notes.jsx       # Halaman manajemen tugas
+│   │   ├── pomodoro.jsx    # Timer pomodoro
+│   │   ├── userProfile.jsx # Profil pengguna
+│   │   ├── flashCardSet.jsx # Kumpulan flashcard
+│   │   ├── flashCardDetail.jsx # Detail set flashcard
+│   │   ├── studyFlashCard.jsx # Halaman belajar flashcard
+│   │   ├── landingPage.jsx # Halaman landing setelah login
+│   │   ├── errorPage.jsx   # Halaman error
+│   │   └── ...
+│   ├── App.jsx             # Komponen utama dengan konfigurasi routing
+│   ├── App.css             # Stylesheet global
+│   └── main.jsx            # Entry point aplikasi
+```
 
 ### Backend (FocusFlow-BE)
 
 The backend follows an MVC-like pattern:
 
-- `src/controllers/`: Request handlers
-- `src/routes/`: API endpoint definitions
-- `src/repositories/`: Database interactions
-- `src/database/`: Database connection and configuration
-- `src/utils/`: Utility functions and helpers
+```
+FocusFlow-BE/
+├── src/
+│   ├── controllers/        # Pengendali request
+│   │   ├── user.controller.js     # Autentikasi dan manajemen pengguna
+│   │   ├── card.controller.js     # Manajemen tugas/catatan
+│   │   ├── pomodoro.sessions.controller.js # Manajemen sesi pomodoro
+│   │   ├── flashcard.controller.js # Manajemen flashcard
+│   │   ├── daily.streak.controller.js # Manajemen streak harian
+│   │   └── ...
+│   ├── routes/             # Definisi API endpoint
+│   │   ├── user.route.js          # Rute pengguna
+│   │   ├── card.route.js          # Rute tugas/catatan
+│   │   ├── pomodoro.route.js      # Rute pomodoro
+│   │   ├── flashcard.route.js     # Rute flashcard
+│   │   ├── daily.streak.route.js  # Rute streak harian
+│   │   └── ...
+│   ├── repositories/       # Interaksi database
+│   │   ├── user.repository.js     # Akses data pengguna
+│   │   ├── card.repositories.js   # Akses data tugas/catatan
+│   │   ├── flashcard.repository.js # Akses data flashcard
+│   │   ├── daily.streak.repository.js # Akses data streak harian
+│   │   └── ...
+│   ├── database/          # Konfigurasi dan koneksi database
+│   │   ├── pg.database.js        # Koneksi PostgreSQL
+│   │   └── ...
+│   └── utils/             # Fungsi utilitas dan helper
+│       ├── baseResponse.utill.js  # Format respons API standar
+│       └── ...
+├── index.js              # Entry point server
+```
 
 ## 🚀 Getting Started
 
@@ -114,18 +162,63 @@ The application will be available at ``.
 
 ## 🔄 API Endpoints
 
+
 ### User Management
-- `POST /user/register` - Register new user
-- `POST /user/login` - User login
-- `GET /user/:id` - Get user details
-- `DELETE /user/:id` - Delete user
+```
+- `POST /user/register` - Mendaftarkan pengguna baru
+- `POST /user/login` - Login pengguna
+- `GET /user/:id` - Mendapatkan detail pengguna
+- `PUT /user/update/name` - Memperbarui nama pengguna
+- `PUT /user/update/email` - Memperbarui email pengguna
+- `PUT /user/update/password` - Memperbarui password pengguna
+- `DELETE /user/:id` - Menghapus pengguna
+- `GET /user` - Mendapatkan semua pengguna
+```
 
 ### Card/Note Management
-- `POST /card` - Create new card/note
-- `GET /card/user/:user_id` - Get all cards for a user
-- `GET /card/:id` - Get card details
-- `PUT /card/:id` - Update card
-- `DELETE /card/:id` - Delete card
+```
+- `POST /card` - Membuat catatan/tugas baru
+- `GET /card/user/:user_id` - Mendapatkan semua catatan untuk pengguna
+- `GET /card/:id` - Mendapatkan detail catatan
+- `PUT /card/:id` - Memperbarui catatan (termasuk status: 'sudah selesai' atau 'belum selesai')
+- `DELETE /card/:id` - Menghapus catatan
+```
+
+### Pomodoro Management
+```
+- `POST /pomodoro/sessions` - Membuat sesi pomodoro baru
+- `GET /pomodoro/sessions/user/:user_id` - Mendapatkan sesi pomodoro untuk pengguna
+- `PUT /pomodoro/sessions/:id/complete` - Menyelesaikan sesi pomodoro
+- `POST /pomodoro/tasks` - Membuat tugas pomodoro baru
+- `GET /pomodoro/tasks/user/:user_id` - Mendapatkan tugas pomodoro untuk pengguna
+- `PUT /pomodoro/tasks/:id` - Memperbarui tugas pomodoro
+- `PUT /pomodoro/tasks/:id/set-current` - Mengatur tugas sebagai tugas saat ini
+- `DELETE /pomodoro/tasks/:id` - Menghapus tugas pomodoro
+- `POST /pomodoro/settings` - Membuat pengaturan pomodoro
+- `GET /pomodoro/settings/user/:user_id` - Mendapatkan pengaturan pomodoro untuk pengguna
+- `PUT /pomodoro/settings/:id` - Memperbarui pengaturan pomodoro
+```
+
+### Flashcard Management
+```
+- `POST /flashcard/set` - Membuat set flashcard baru
+- `GET /flashcard/set/user/:user_id` - Mendapatkan semua set flashcard untuk pengguna
+- `GET /flashcard/set/:id` - Mendapatkan detail set flashcard
+- `GET /flashcard/set/:id/cards` - Mendapatkan set flashcard dengan kartu
+- `PUT /flashcard/set/:id` - Memperbarui set flashcard
+- `DELETE /flashcard/set/:id` - Menghapus set flashcard
+- `POST /flashcard/card` - Membuat kartu flashcard baru
+- `GET /flashcard/cards/set/:set_id` - Mendapatkan kartu flashcard dari set
+- `PUT /flashcard/card/:id` - Memperbarui kartu flashcard
+- `DELETE /flashcard/card/:id` - Menghapus kartu flashcard
+```
+
+### Daily Streak Management
+```
+- `GET /api/streak/user/:user_id` - Mendapatkan streak pengguna
+- `POST /api/streak/complete` - Memperbarui streak setelah menyelesaikan pomodoro
+- `POST /api/streak/force-increment` - Menambah streak secara manual (untuk testing)
+```
 
 ## 🔐 Authentication Flow
 
@@ -142,9 +235,7 @@ FocusFlow features a pixelated focus app and soothing blue color palette with gl
 
 The application uses a PostgreSQL database with the following main tables:
 
-- `users`: User account information
-- `cards`: Notes/tasks with status trackin
-
+![Imgur](https://imgur.com/sJekUi7.png)
 
 ## 🔗 Deployment
 
