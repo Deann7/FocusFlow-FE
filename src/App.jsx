@@ -10,6 +10,7 @@ import ErrorPage from './pages/errorPage';
 import FlashCardSet from './pages/flashCardSet';
 import FlashCardDetail from './pages/flashCardDetail';
 import StudyFlashCard from './pages/studyFlashCard';
+import LandingPage from './pages/landingPage';
 
 // Protected Route component
 const ProtectedRoute = ({ children }) => {
@@ -23,11 +24,14 @@ const ProtectedRoute = ({ children }) => {
 };
 
 function App() {
+  // Check if user is authenticated for root path
+  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+  
   return (
     <Router>
-      <div className="h-screen">
+      <div className="h-auto">
         <Routes>
-          <Route path="/" element={<Homepage />} />
+          <Route path="/" element={isAuthenticated ? <Navigate to="/landingPage" /> : <Homepage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/pomodoro" element={<Pomodoro />} />
@@ -37,7 +41,15 @@ function App() {
           <Route path="/studyflashcard/:setId" element={<StudyFlashCard />} />
           
           {/* Protected routes */}
-          
+
+          <Route 
+            path="/landingPage" 
+            element={
+              <ProtectedRoute>
+                <LandingPage />
+              </ProtectedRoute>
+            } 
+          />
           <Route 
             path="/notes" 
             element={
@@ -46,7 +58,6 @@ function App() {
               </ProtectedRoute>
             } 
           />
-          {/* Error page for any undefined routes */}
           <Route path="/error" element={<ErrorPage />} />
           <Route path="*" element={<ErrorPage />} />
         </Routes>
