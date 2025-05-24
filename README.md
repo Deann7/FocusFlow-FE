@@ -1,23 +1,23 @@
-# FocusFlow* - Productivity App for Students
+# FocusFlow\* - Productivity App for Students
 
 <div align="center">
-  <img src="/public/book.svg" alt="FocusFlow Logo" width="100" />
+  <img src="FocusFlow-FE/public/book.svg"alt="FocusFlow Logo" width="100" />
   <h3>Your Complete Productivity Solution</h3>
   <p><i>Manage notes, time, and learning efficiently</i></p>
 </div>
 
 ## 👥 Team Members
 
-| No | Name |
-|----|------|
-| 1 | Jesie Tenardi |
-| 2 | Putri Kiara Salsabila Arief | 
-| 3 | Nugroho Ulli Abshar | 
-| 4 | Deandro Najwan Ahmad Syahbanna |
+| No  | Name                           |
+| --- | ------------------------------ |
+| 1   | Jesie Tenardi                  |
+| 2   | Putri Kiara Salsabila Arief    |
+| 3   | Nugroho Ulli Abshar            |
+| 4   | Deandro Najwan Ahmad Syahbanna |
 
 ## 📝 About FocusFlow
 
-FocusFlow adalah *productivity app* berbasis web yang dirancang khusus untuk mahasiswa, dengan tujuan membantu mereka mengelola catatan, waktu belajar, dan pengeluaran secara efektif. Hadir dengan desain yang menarik menggunakan library modern untuk pengalaman pengguna yang optimal.
+FocusFlow adalah _productivity app_ berbasis web yang dirancang khusus untuk mahasiswa, dengan tujuan membantu mereka mengelola catatan, waktu belajar, dan pengeluaran secara efektif. Hadir dengan desain yang menarik menggunakan library modern untuk pengalaman pengguna yang optimal.
 
 ## 🌟 Features
 
@@ -30,6 +30,7 @@ FocusFlow adalah *productivity app* berbasis web yang dirancang khusus untuk mah
 ## 🛠️ Tech Stack
 
 ### Frontend
+
 - **Framework**: React.js with Vite
 - **Styling**: Tailwind CSS
 - **Animations**: Framer Motion
@@ -40,6 +41,7 @@ FocusFlow adalah *productivity app* berbasis web yang dirancang khusus untuk mah
 - **Notifications**: SweetAlert2
 
 ### Backend
+
 - **Runtime**: Node.js
 - **Framework**: Express.js
 - **Database**: PostgreSQL (Neon Database)
@@ -126,6 +128,7 @@ FocusFlow-BE/
 ## 🚀 Getting Started
 
 ### Prerequisites
+
 - Node.js (v16+)
 - npm or yarn
 - PostgreSQL database
@@ -133,12 +136,14 @@ FocusFlow-BE/
 ### Installation
 
 **Clone the repository:**
+
 ```bash
 git clone https://github.com/yourusername/focusflow.git
 cd focusflow
 ```
 
 **Setting up the backend:**
+
 ```bash
 cd FocusFlow-BE
 npm install
@@ -147,6 +152,7 @@ npm start
 ```
 
 **Setting up the frontend:**
+
 ```bash
 cd FocusFlow-FE
 npm install
@@ -159,11 +165,10 @@ The application will be available at ``.
 
 ![Tampilan](https://hackmd.io/_uploads/By5Z_EP-ee.png)
 
-
 ## 🔄 API Endpoints
 
-
 ### User Management
+
 ```
 - `POST /user/register` - Mendaftarkan pengguna baru
 - `POST /user/login` - Login pengguna
@@ -176,6 +181,7 @@ The application will be available at ``.
 ```
 
 ### Card/Note Management
+
 ```
 - `POST /card` - Membuat catatan/tugas baru
 - `GET /card/user/:user_id` - Mendapatkan semua catatan untuk pengguna
@@ -185,6 +191,7 @@ The application will be available at ``.
 ```
 
 ### Pomodoro Management
+
 ```
 - `POST /pomodoro/sessions` - Membuat sesi pomodoro baru
 - `GET /pomodoro/sessions/user/:user_id` - Mendapatkan sesi pomodoro untuk pengguna
@@ -200,6 +207,7 @@ The application will be available at ``.
 ```
 
 ### Flashcard Management
+
 ```
 - `POST /flashcard/set` - Membuat set flashcard baru
 - `GET /flashcard/set/user/:user_id` - Mendapatkan semua set flashcard untuk pengguna
@@ -214,6 +222,7 @@ The application will be available at ``.
 ```
 
 ### Daily Streak Management
+
 ```
 - `GET /api/streak/user/:user_id` - Mendapatkan streak pengguna
 - `POST /api/streak/complete` - Memperbarui streak setelah menyelesaikan pomodoro
