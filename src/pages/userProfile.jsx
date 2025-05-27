@@ -247,7 +247,7 @@ const UserProfile = () => {
       {/* Home button */}
       <div className="w-full flex justify-end px-4 mb-4 md:mb-6 z-30">
         <motion.button
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/landingPage')}
           className="bg-blue-200 text-blue-500 px-4 py-1 rounded-md flex items-center text-sm font-poppins"
           whileHover={{ scale: 1.05, backgroundColor: "#bfdbfe" }}
           whileTap={{ scale: 0.95 }}
